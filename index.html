@@ -82,6 +82,29 @@
     <p class="privacy" style="margin-top:.6rem;"><strong>Accuracy note:</strong> the container format and the shortcut format are both public specifications, and are parsed strictly. The "DestList" metadata (pin order, access count, recorded path) uses a format Microsoft has never published, reverse-engineered by the forensics community &mdash; it's offered as best-effort supplementary detail; if it can't be parsed cleanly, the shortcuts are still shown from their own data.</p>
   </div>
 
+
+  <div class="card faq">
+    <h2>Reading a Jump List on Mac or Linux</h2>
+    <p class="privacy">Jump list files live under Windows' <code>%AppData%\Microsoft\Windows\Recent\AutomaticDestinations</code> folder, but the container format underneath (OLE2 Compound File Binary, plus embedded Shell Link entries) is a documented, platform-independent binary layout. Copy the file to any computer and drop it in above &mdash; no Windows tooling required.</p>
+  </div>
+
+  <div class="card faq">
+    <h2>Troubleshooting</h2>
+    <details><summary>DestList metadata (pin order, access count) didn't parse for one or more entries</summary>
+      <p>Unlike the container and shortcut formats, the "DestList" stream's internal layout was never published by Microsoft &mdash; it's reverse-engineered by the digital-forensics community and offered here as best-effort supplementary detail. When it can't be read cleanly, the shortcuts themselves are still shown correctly from their own well-specified data.</p>
+    </details>
+    <details><summary>I don't see the file or app I expected in the list</summary>
+      <p>Each Jump List file belongs to exactly one application, named by an AppID hash in its filename (not the app's actual name). Check <code>%AppData%\Microsoft\Windows\Recent\AutomaticDestinations\</code> for the right file &mdash; Windows keeps a completely separate file per app.</p>
+    </details>
+  </div>
+
+  <div class="card cli">
+    <h2>Prefer the command line?</h2>
+    <p class="privacy">Eric Zimmerman's <code>JLECmd</code> is a well-known digital-forensics command-line tool for jump lists, built on .NET so it also runs on Mac and Linux via the .NET runtime:</p>
+    <div class="cli-block">JLECmd.exe -f file.automaticDestinations-ms</div>
+  </div>
+
+
   <div id="ad-slot" data-aads-unit="2455595"></div>
 </main>
 <script type="module" src="app.js"></script>

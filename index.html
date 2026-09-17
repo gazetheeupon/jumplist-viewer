@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Windows Jump List Parser — Inspect .automaticDestinations-ms Online</title>
+<meta name="description" content="Open a Windows jump list file (.automaticDestinations-ms or .customDestinations-ms) and see the recent and pinned shortcuts it contains: target path, pin order, access count, and last-modified time. Entirely in your browser, no upload.">
+<link rel="stylesheet" href="https://gazetheeupon.github.io/shared-assets/theme.css?v=2">
+<link rel="canonical" href="https://gazetheeupon.github.io/jumplist-viewer/">
+<meta property="og:title" content="Free Windows Jump List Parser">
+<meta property="og:description" content="Inspect a Windows jump list file: recent/pinned shortcuts, target paths, pin order, access counts. Entirely in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gazetheeupon.github.io/jumplist-viewer/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Windows Jump List Parser">
+<meta name="twitter:description" content="Inspect a Windows jump list file: recent/pinned shortcuts, target paths, pin order, access counts. Entirely in your browser.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Free Windows Jump List Parser",
+  "url": "https://gazetheeupon.github.io/jumplist-viewer/",
+  "description": "Open a Windows jump list file (.automaticDestinations-ms or .customDestinations-ms) and see the recent and pinned shortcuts it contains. Entirely in your browser, no upload.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any (runs in web browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<style>
+  :root{--bg:#0f1720;--card:#1a2532;--text:#e8edf2;--muted:#93a3b3;--accent:#4fa8ff;--border:#2a3745;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;}
+  header{padding:2rem 1rem 1rem;text-align:center;}
+  h1{font-size:1.6rem;margin:0 0 .4rem;}
+  p.sub{color:var(--muted);margin:0;max-width:640px;margin:0 auto;}
+  main{max-width:780px;margin:0 auto;padding:1.5rem 1rem 3rem;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.2rem;}
+  .dropzone{border:2px dashed var(--border);border-radius:10px;padding:2.2rem 1rem;text-align:center;cursor:pointer;transition:border-color .15s;}
+  .dropzone.drag{border-color:var(--accent);}
+  .dropzone input{display:none;}
+  .dropzone .hint{color:var(--muted);font-size:.9rem;margin-top:.4rem;}
+  #status{color:var(--muted);font-size:.9rem;margin-top:.8rem;min-height:1.2em;white-space:pre-line;}
+  #results h2{font-size:1rem;margin:1.2rem 0 .5rem;color:var(--text);}
+  #results .entry:first-child h2{margin-top:0;}
+  #results table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  #results td{padding:.35rem .5rem;border-bottom:1px solid var(--border);vertical-align:top;}
+  #results td:first-child{color:var(--muted);width:40%;white-space:nowrap;}
+  #results td:last-child{word-break:break-all;}
+  #results p.note{color:var(--muted);font-size:.85rem;}
+  .badge{display:inline-block;background:var(--accent);color:#04121f;font-size:.7rem;font-weight:700;border-radius:5px;padding:.1rem .5rem;vertical-align:middle;}
+  .warn{background:#3a2a1a;border:1px solid #6b4a1e;color:#ffcf8a;border-radius:8px;padding:.7rem .9rem;font-size:.85rem;margin-bottom:1rem;}
+  #exportRow{display:none;gap:.6rem;margin-top:1.2rem;}
+  button.exp{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:.55rem 1.1rem;font-size:.88rem;font-weight:600;cursor:pointer;}
+  footer{text-align:center;color:var(--muted);font-size:.82rem;padding:1.5rem 1rem 2.5rem;}
+  footer a{color:var(--accent);}
+  .privacy{font-size:.85rem;color:var(--muted);}
+  .privacy strong{color:var(--text);}
+</style>
+</head>
+<body>
+<div class="site-header"><a class="site-header__brand" href="https://gazetheeupon.github.io/">RunLocal</a><span class="site-header__tagline">Free tools that run entirely in your browser</span></div>
+<header>
+  <h1>Windows Jump List Parser</h1>
+  <p class="sub">Drop in a <code>.automaticDestinations-ms</code> or <code>.customDestinations-ms</code> file (found under <code>%AppData%\Microsoft\Windows\Recent\AutomaticDestinations</code>) to see the recent and pinned shortcuts an app has recorded: target path, pin order, access count, last-modified time.</p>
+</header>
+<main>
+  <div class="card">
+    <div class="dropzone" id="dropzone">
+      <div>Drop a jump list file here, or click to choose</div>
+      <div class="hint">.automaticDestinations-ms or .customDestinations-ms</div>
+      <input type="file" id="fileInput" accept=".automaticDestinations-ms,.customDestinations-ms,*">
+    </div>
+    <div id="status"></div>
+    <div id="results"></div>
+    <div id="exportRow">
+      <button class="exp" id="exportJsonBtn">Export JSON</button>
+      <button class="exp" id="exportCsvBtn">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="privacy"><strong>How this works:</strong> this page reads the Compound File Binary (OLE2) container format and the embedded Shell Link (.lnk) entries directly in your browser tab, with plain JavaScript. No WebAssembly, no CDN dependency, nothing uploaded &mdash; your file is never sent anywhere.</p>
+    <p class="privacy" style="margin-top:.6rem;"><strong>Accuracy note:</strong> the container format and the shortcut format are both public specifications, and are parsed strictly. The "DestList" metadata (pin order, access count, recorded path) uses a format Microsoft has never published, reverse-engineered by the forensics community &mdash; it's offered as best-effort supplementary detail; if it can't be parsed cleanly, the shortcuts are still shown from their own data.</p>
+  </div>
+
+  <div id="ad-slot"></div>
+</main>
+<footer>
+  Free, no signup, runs entirely offline in your browser once loaded.
+<div style="margin-top:.6rem;">&copy; 2026 GazeTheeUpon. All rights reserved. <a href="LICENSE" style="color:inherit;">Source license</a> &mdash; view-source friendly, redistribution not permitted.</div>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

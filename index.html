@@ -56,6 +56,30 @@
   .privacy{font-size:.85rem;color:var(--muted);}
   .privacy strong{color:var(--text);}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "DestList metadata (pin order, access count) didn't parse for one or more entries",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Unlike the container and shortcut formats, the \"DestList\" stream's internal layout was never published by Microsoft \u2014 it's reverse-engineered by the digital-forensics community and offered here as best-effort supplementary detail. When it can't be read cleanly, the shortcuts themselves are still shown correctly from their own well-specified data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "I don't see the file or app I expected in the list",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Each Jump List file belongs to exactly one application, named by an AppID hash in its filename (not the app's actual name). Check %AppData%\\Microsoft\\Windows\\Recent\\AutomaticDestinations\\ for the right file \u2014 Windows keeps a completely separate file per app."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <header>
